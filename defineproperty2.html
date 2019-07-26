@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <div class="part1">
+    <input type="text" id="test">
+    <p id="test2"></p>
+  </div>
+  <div class="part2">
+    <div>
+      <p>你好,<input type="text" id='nickName'></p>
+      <div id="introduce"></div>
+    </div>
+    <button id="btn">点击</button>
+    <button id="getNickName">获取nickName</button>
+    <p id="showNickName"></p>
+  </div>
+
+
+  <script type="text/javascript">
+    /****part1 start****/
+    var obj = {};
+    Object.defineProperty(obj, "test", {
+      get: function () {
+        // 获取obj.test的值时触发
+        return document.getElementById('test').value;
+      },
+      set: function (newVal) {
+        // obj.test赋值时触发
+        document.getElementById("test2").innerHTML = newVal;
+      }
+    })
+    // document.addEventListener('keyup', function (e) {
+    //   obj.test = e.target.value; // input输入的值作为obj的“动态属性值”，赋值给p
+    // })
+    /****part1 end****/
+    /****part2 start****/
+    var userInfo = {};
+    Object.defineProperty(userInfo, "nickName", {
+      get: function () {
+        //return document.getElementById('nickName').innerHTML;
+        return document.getElementById('nickName').value
+      },
+      set: function (nick) {
+        //document.getElementById('nickName').innerHTML = nick;
+        document.getElementById('nickName').value = nick;
+      }
+    });
+    Object.defineProperty(userInfo, "introduce", {
+      get: function () {
+        return document.getElementById('introduce').innerHTML;
+      },
+      set: function (introduce) {
+        document.getElementById('introduce').innerHTML = introduce;
+      }
+    })
+
+    document.getElementById('btn').onclick = function () {
+      userInfo.nickName = "xxx";
+      userInfo.introduce = "我是xxx，我来自杭州，...";
+      obj.test='sddadadadada';
+    }
+    document.getElementById('getNickName').onclick = function () {
+      document.getElementById('showNickName').innerHTML = userInfo.nickName;
+      document.getElementById('test2').innerHTML = obj.test;
+    }
+
+    /****part2 end*****/
+  </script>
+</body>
+
+</html>

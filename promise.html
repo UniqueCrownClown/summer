@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        'use strict';
+        new Promise(function () {});
+        //setTimeout和setInterval支持三个参数，，，
+        setTimeout(function (x, y) {
+            console.log(x + y);
+        }, 1000, 2, 3);
+
+        //串行执行异步操作
+        function fn1(resolve, reject) {
+            setTimeout(function sum(x, y) {
+                let sum = x+y;
+                console.log("求和1：" + sum);
+                if(sum>20){
+                    //成功返回走下一个then
+                    resolve('步骤一');
+                }else{
+                    //gg了，直接抛出去走catch
+                    reject('抛出错误');
+                }     
+            }, 5000, 10, 11);
+        }
+
+        function fn2(resolve, reject) {
+            setTimeout(function sum(x, y) {
+                console.log("求和2：" + (x + y));
+                resolve('步骤二')
+            }, 2000, 15, 16);
+        }
+
+        function fn3(resolve, reject) {
+            setTimeout(function sum(x, y) {
+                console.log("求和3：" + (x + y));
+            }, 1000, 17, 18);
+        }
+
+        new Promise(fn1).then(function (val) {
+            console.log("第二层"+val);
+            return new Promise(fn2);
+        }).then(function (val) {
+            console.log("第三层"+val);
+            return new Promise(fn3);
+        }).catch(function (reason) {
+            console.log('失败：' + reason);
+        });
+
+        //并行执行异步操作
+        var p1 = new Promise(function (resolve, reject) {
+            setTimeout(resolve, 500, 'P1');
+        });
+        var p2 = new Promise(function (resolve, reject) {
+            setTimeout(resolve, 600, 'P2');
+        });
+        // 同时执行p1和p2，并在它们都完成后执行then:
+        Promise.all([p1, p2]).then(function (results) {
+            console.log(results); // 获得一个Array: ['P1', 'P2']
+        });
+        // p1和p2操作异步,then只执行一次,第二次执行结果抛弃
+        Promise.race([p1, p2]).then(function (result) {
+            console.log(result); // 'P1'
+        });
+
+        //async和await语法(本质也是promise语法，，在链式调用的时候更简洁，更趋于同步的代码)
+
+        
+    </script>
+</body>
+
+</html>
