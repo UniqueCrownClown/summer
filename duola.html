@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doraemon</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <canvas id="canvas" width="400" height="600"></canvas>
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      //椭圆
+      function drawEllipse(ctx, x, y, radiusX, radiusY) {
+        const kappa = 0.5522848;
+        const ox = radiusX * kappa; // 水平控制点偏移量
+        const oy = radiusY * kappa; // 垂直控制点偏移量
+
+        ctx.beginPath();
+        ctx.moveTo(x, y - radiusY);
+        ctx.bezierCurveTo(
+          x + ox,
+          y - radiusY,
+          x + radiusX,
+          y - oy,
+          x + radiusX,
+          y
+        );
+        ctx.bezierCurveTo(
+          x + radiusX,
+          y + oy,
+          x + ox,
+          y + radiusY,
+          x,
+          y + radiusY
+        );
+        ctx.bezierCurveTo(
+          x - ox,
+          y + radiusY,
+          x - radiusX,
+          y + oy,
+          x - radiusX,
+          y
+        );
+        ctx.bezierCurveTo(
+          x - radiusX,
+          y - oy,
+          x - ox,
+          y - radiusY,
+          x,
+          y - radiusY
+        );
+        ctx.closePath();
+      }
+
+      //桶状
+      function drawBarrelShape(
+        startX,
+        startY,
+        width,
+        height,
+        curveRadius,
+        fillColor,
+        strokeColor,
+        lineWidth
+      ) {
+        // 移动到起始点
+        ctx.beginPath();
+        ctx.moveTo(startX + curveRadius, startY);
+
+        // 绘制上侧边直线
+        ctx.lineTo(startX + width - curveRadius, startY);
+
+        // 绘制右侧曲线
+        const controlX1 = startX + width;
+        const controlY1 = startY + height / 2;
+        ctx.quadraticCurveTo(
+          controlX1,
+          controlY1,
+          startX + width - curveRadius,
+          startY + height
+        );
+
+        // 绘制下侧边直线
+        ctx.lineTo(startX + curveRadius, startY + height);
+
+        // 绘制左侧曲线
+        const controlX2 = startX;
+        const controlY2 = startY + height / 2;
+        ctx.quadraticCurveTo(
+          controlX2,
+          controlY2,
+          startX + curveRadius,
+          startY
+        );
+
+        // 闭合路径
+        ctx.closePath();
+
+        // 设置填充颜色和边框颜色
+        ctx.fillStyle = fillColor;
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = lineWidth;
+
+        // 填充和绘制边框
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      //圆角矩阵
+      function drawRoundedRect(x, y, w, h, radius, rotationAngle = 0) {
+        ctx.save(); // 保存当前绘图状态
+        ctx.translate(x, y); // 移动到指定位置
+        ctx.rotate(rotationAngle); // 旋转指定角度
+
+        ctx.beginPath();
+        ctx.moveTo(radius, 0);
+        ctx.arcTo(w, 0, w, h, radius); // 右上角
+        ctx.arcTo(w, h, 0, h, radius); // 右下角
+        ctx.arcTo(0, h, 0, 0, radius); // 左下角
+        ctx.arcTo(0, 0, w, 0, radius); // 左上角
+        ctx.closePath();
+
+        ctx.fill();
+
+        ctx.restore(); // 恢复之前保存的绘图状态
+      }
+
+      function drawBody() {
+        // 绘制哆啦 A 梦的身体
+        drawBarrelShape(40, 310, 325, 230, 50, "#0096FF", "black", 1);
+        // 肚子白色区域
+        ctx.beginPath();
+        ctx.arc(200, 410, 100, 0, 2 * Math.PI);
+        ctx.fillStyle = "white";
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.lineWidth = 2;
+        ctx.arc(200, 410, 80, 0, Math.PI);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(120, 410);
+        ctx.lineTo(280, 410);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(190, 515);
+        ctx.lineTo(210, 515);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(200, 515);
+        ctx.lineTo(200, 550);
+        ctx.stroke();
+      }
+
+      function drawHead() {
+        // 绘制哆啦 A 梦的头部
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(200, 200, 160, (3 / 4) * Math.PI, (9 / 4) * Math.PI);
+        ctx.fillStyle = "#0096FF";
+        ctx.fill();
+        ctx.stroke();
+
+        // 脸部白色区域
+        ctx.beginPath();
+        ctx.arc(200, 220, 130, (3 / 4) * Math.PI, (9 / 4) * Math.PI);
+        ctx.fillStyle = "white";
+        ctx.fill();
+        ctx.stroke();
+
+        // 眼睛
+        // 左眼
+        ctx.beginPath();
+        drawEllipse(ctx, 170, 100, 30, 35);
+        ctx.fillStyle = "white";
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        drawEllipse(ctx, 175, 110, 8, 10);
+        ctx.fillStyle = "black";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(175, 110, 3, 0, 2 * Math.PI);
+        ctx.fillStyle = "#FFF7FF";
+        ctx.fill();
+        ctx.stroke();
+        // 右眼
+        ctx.beginPath();
+        drawEllipse(ctx, 230, 100, 30, 35);
+        ctx.fillStyle = "white";
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+        ctx.beginPath();
+        drawEllipse(ctx, 225, 110, 8, 10);
+        ctx.fillStyle = "black";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(225, 110, 3, 0, 2 * Math.PI);
+        ctx.fillStyle = "#FFF7FF";
+        ctx.fill();
+        ctx.stroke();
+
+        //鼻子到嘴巴的线
+        ctx.beginPath();
+        ctx.moveTo(200, 155);
+        ctx.lineTo(200, 280);
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // 鼻子
+        ctx.beginPath();
+        ctx.arc(200, 140, 18, 0, 2 * Math.PI);
+        ctx.fillStyle = "red";
+        ctx.lineWidth = 1;
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(200, 135, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = "#FFF7FF";
+        ctx.strokeStyle = "rgba(0, 0, 0, 0)";
+        ctx.fill();
+        ctx.stroke();
+
+        // 嘴巴
+        ctx.beginPath();
+        ctx.arc(200, 180, 100, (1 / 6) * Math.PI, (5 / 6) * Math.PI);
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // 胡须
+        // 左边胡须
+        ctx.beginPath();
+        ctx.lineWidth = 2;
+        ctx.moveTo(100, 150);
+        ctx.lineTo(180, 180);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(100, 200);
+        ctx.lineTo(180, 200);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(100, 240);
+        ctx.lineTo(180, 220);
+        ctx.stroke();
+        // 右边胡须
+        ctx.beginPath();
+        ctx.moveTo(220, 180);
+        ctx.lineTo(300, 150);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(220, 200);
+        ctx.lineTo(300, 200);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(220, 220);
+        ctx.lineTo(300, 240);
+        ctx.stroke();
+      }
+
+      function drawHands() {
+        // 绘制哆啦 A 梦的手
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "black";
+        ctx.fillStyle = "#0096FF"; // 设置填充颜色
+        drawRoundedRect(90, 310, 40, 80, 0, Math.PI / 4);
+        ctx.stroke();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "black";
+        ctx.fillStyle = "#0096FF"; // 设置填充颜色
+        drawRoundedRect(315, 310, 80, 40, 0, Math.PI / 4);
+        ctx.stroke();
+      }
+      function drawPalms() {
+        // 绘制哆啦 A 梦的手掌
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.arc(40, 405, 40, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+        ctx.stroke();
+
+        // 右手
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.arc(360, 405, 40, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      function drawFeet() {
+        // 绘制哆啦 A 梦的脚
+        ctx.beginPath();
+        ctx.ellipse(131, 550, 70, 30, 0, 0, 2 * Math.PI);
+        ctx.fillStyle = "white";
+        ctx.fill();
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse(269, 550, 70, 30, 0, 0, 2 * Math.PI);
+        ctx.fillStyle = "white";
+        ctx.fill();
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      function drawBell() {
+        // 绘制哆啦 A 梦的铃铛
+        ctx.beginPath();
+        ctx.fillStyle = "#CD0833"; // 设置填充颜色
+        drawRoundedRect(85, 310, 235, 10, 5);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(200, 340, 30, 0, 2 * Math.PI);
+        ctx.fillStyle = "#F6E03D";
+        ctx.lineWidth = 1;
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.fillStyle = "#F6E03D"; // 设置填充颜色
+        drawRoundedRect(170, 325, 60, 5, 2.5);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(200, 345, 8, 0, 2 * Math.PI);
+        ctx.fillStyle = "#816D4C";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(200, 353);
+        ctx.lineTo(200, 370);
+        ctx.stroke();
+      }
+
+      drawHands();
+      drawBody();
+      drawPalms();
+      drawFeet();
+      drawHead();
+      drawBell();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <button id="testVue" onclick="testCreateVue()">测试vue</button>
+  <div id="testId">
+    <span>{{apple}}</span>
+    <input type="button" value="测试按钮" v-on:click="testClick">
+  </div>
+  <script src="./vueCreate.js"></script>
+  <script>
+    testCreateVue = () => {
+      let test = new Vue({
+        el: '#testId',
+        data: {
+          apple: 'helloWorld!!',
+          btn: 'testBtn',
+        },
+        methods: {
+          testClick: () => {
+            test._data.apple = "helloWrold2"
+          }
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>
